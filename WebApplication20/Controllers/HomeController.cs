@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.IO;
+using ImageUpload.Data;
 
 namespace WebApplication20.Controllers
 {
@@ -13,18 +15,30 @@ namespace WebApplication20.Controllers
             return View();
         }
 
-        public ActionResult About()
+        public ActionResult Upload(string text, HttpPostedFileBase imageFile)
         {
-            ViewBag.Message = "Your application description page.";
+            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
 
-            return View();
+            imageFile.SaveAs(Server.MapPath("~/UploadedImages/") + fileName);
+
+            new Db(Properties.Settings.Default.ConStr).Add(fileName, text);
+
+            return RedirectToAction("Index");
         }
 
-        public ActionResult Contact()
+        public ActionResult ViewAll()
         {
-            ViewBag.Message = "Your contact page.";
+            return View(new Db(Properties.Settings.Default.ConStr).GetAll());
+        }
 
-            return View();
+        public ActionResult ViewSingle(int imageId)
+        {
+            var image = new Db(Properties.Settings.Default.ConStr).GetAll().FirstOrDefault(i => i.Id == imageId);
+            if (image == null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(image);
         }
     }
 }

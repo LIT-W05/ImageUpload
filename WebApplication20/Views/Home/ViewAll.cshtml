@@ -1,0 +1,12 @@
+﻿@model IEnumerable<ImageUpload.Data.UploadedImage>
+
+
+@foreach (var image in Model)
+{
+    <div>
+        <a href="/home/viewsingle?imageId=@image.Id">
+            <h3>@image.Text</h3>
+            <img src="/UploadedImages/@image.FileName" style="width: 300px;" />
+        </a>
+    </div>
+}
